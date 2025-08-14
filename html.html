@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Podgląd danych z ESP32</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>Dane z ESP32</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Temperatura (°C)</th>
+                <th>Wilgotność (%)</th>
+            </tr>
+        </thead>
+        <tbody id="data-table">
+            <tr><td colspan="2">Ładowanie...</td></tr>
+        </tbody>
+    </table>
+
+    <script>
+        const API_URL = "https://twoja-nazwa.onrender.com/data"; // <-- wstaw swój adres Render
+
+        async function loadData() {
+            try {
+                const res = await fetch(API_URL);
+                const data = await res.json();
+
+                const table = document.getElementById("data-table");
+                table.innerHTML = "";
+
+                data.forEach(row => {
+                    const tr = document.createElement("tr");
+                    const tdTemp = document.createElement("td");
+                    const tdHum = document.createElement("td");
+
+                    tdTemp.textContent = row.temperature ?? "-";
+                    tdHum.textContent = row.humidity ?? "-";
+
+                    tr.appendChild(tdTemp);
+                    tr.appendChild(tdHum);
+                    table.appendChild(tr);
+                });
+
+            } catch (err) {
+                console.error("Błąd ładowania danych:", err);
+            }
+        }
+
+        loadData();
+        setInterval(loadData, 5000); // odśwież co 5 sekund
+    </script>
+</body>
+</html>
